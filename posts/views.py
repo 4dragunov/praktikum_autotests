@@ -70,7 +70,7 @@ def profile(request, username):
                            'total_posts': total_posts,
                            'author': author,
                            'profile_posts': profile_posts,
-                           'is_user_author': is_user_author})
+                           'is_user_author': is_user_author,})
 
 
 def post_view(request, username, post_id):
@@ -89,23 +89,17 @@ def post_view(request, username, post_id):
                                          'post_count': post_count
                                          })
 
-
+@login_required
 def post_edit(request, username, post_id):
-    # тут тело функции. Не забудьте проверить,
-    # что текущий пользователь — это автор записи.
-    # В качестве шаблона страницы редактирования
-    # укажите шаблон создания новой записи
-    # который вы создали раньше (вы могли назвать шаблон иначе)
     is_form_edit = True
-    if str(username) == str(request.user):
-        post = get_object_or_404(Post, pk__iexact=post_id)
-        if request.method == 'POST':
-            bound_form = PostForm(data=request.POST, instance=post)
-            if bound_form.is_valid():
-                post = bound_form.save()
-                return redirect('post', username, post_id)
-        else:
-            form = PostForm(instance=post)
+    post = get_object_or_404(Post, author__username=username, pk__iexact=post_id)
+    if post.author == request.user:
+        bound_form = PostForm(request.POST or None, instance=post)
+        if bound_form.is_valid():
+            post = bound_form.save()
+            return redirect('post', username, post_id)
+
+        form = PostForm(instance=post)
 
         return render(request, "new_post.html",
                       context={'form': form,

@@ -8,10 +8,11 @@
         <h5>
             Автор:
             <a href="{% url 'profile' post.author %}"> {{ post.author.get_full_name }} </a>,
-            Дата публикации: {{ post.pub_date|date:"d M Y" }
+            Дата публикации: {{ post.pub_date|date:"d M Y" }}
             <p>
                 <h6><a href="{% url 'post' post.author post.id %}"> Читать полностью </a></h6>
             </p>
+
 
         </h5>
 
